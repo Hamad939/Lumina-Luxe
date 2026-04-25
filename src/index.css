@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap');
+@import 'tailwindcss';
+
+:root {
+  --color-cream: #f8f2ec;
+  --color-cream-deep: #efe4da;
+  --color-panel: #f4ebe2;
+  --color-blush: #ecd8cc;
+  --color-accent: #c48d74;
+  --color-accent-strong: #af775f;
+  --color-ink: #2d2019;
+  --color-muted: #7a685d;
+  --color-line: rgba(110, 82, 59, 0.14);
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Manrope', sans-serif;
+    background:
+      radial-gradient(circle at top left, rgba(255, 255, 255, 0.7), transparent 24%),
+      linear-gradient(180deg, #fcf8f4 0%, #f8f2ec 100%);
+    color: var(--color-ink);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .font-brand {
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .bg-mesh {
+    background:
+      radial-gradient(circle at 15% 20%, rgba(231, 202, 188, 0.45), transparent 22%),
+      radial-gradient(circle at 85% 14%, rgba(203, 223, 205, 0.35), transparent 20%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
+  }
+
+  .fade-up {
+    animation: fade-up 700ms ease-out both;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
