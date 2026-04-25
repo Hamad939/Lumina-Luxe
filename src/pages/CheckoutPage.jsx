@@ -116,7 +116,8 @@ function CheckoutPage({
     const whatsappMessage = encodeURIComponent(
       `\u{1F6CD}\uFE0F New Order Received!\nName: ${formData.fullName}\nItems: ${itemsSummary}\nTotal: ${totalPrice}\nAddress: ${formData.shippingAddress}, ${formData.city}`,
     );
-    const nextWhatsappUrl = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE_NUMBER}&text=${whatsappMessage}`;
+    const nextWhatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${whatsappMessage}
+    `;
     setWhatsappUrl(nextWhatsappUrl);
 
     if (whatsappWindow && !whatsappWindow.closed) {
