@@ -67,13 +67,78 @@ function CheckoutPage({
     0,
   );
 
+  // const handlePlaceOrder = async (formData) => {
+  //   if (cartItems.length === 0) {
+  //     return false;
+  //   }
+
+  //   const normalizedPhoneNumber = normalizePhoneNumber(formData.phoneNumber);
+  //   const whatsappWindow = prepareWhatsappWindow();
+
+  //   setIsProcessing(true);
+  //   setOrderFeedback("");
+  //   setWhatsappUrl("");
+
+  //   const orderPayload = {
+  //     customer_name: formData.fullName,
+  //     phone_number: normalizedPhoneNumber,
+  //     address: formData.shippingAddress,
+  //     city: formData.city,
+  //     payment_method: formData.paymentMethod,
+  //     items: cartItems,
+  //     total_price: totalPrice,
+  //   };
+
+  //   const { data, error } = await supabase
+  //     .from("orders")
+  //     .insert([orderPayload])
+  //     .select();
+
+  //   setIsProcessing(false);
+
+  //   if (error) {
+  //     if (whatsappWindow && !whatsappWindow.closed) {
+  //       whatsappWindow.close();
+  //     }
+
+  //     setHasPlacedOrder(false);
+  //     setOrderFeedback(getOrderErrorMessage(error));
+  //     return false;
+  //   }
+
+  //   const createdOrder = data?.[0] || null;
+  //   const createdOrderId = createdOrder?.id || null;
+
+  //   const itemsSummary = cartItems
+  //     .map((item) => `${item.name} x${item.quantity}`)
+  //     .join(", ");
+
+  //   const whatsappMessage = encodeURIComponent(
+  //     `\u{1F6CD}\uFE0F New Order Received!\nName: ${formData.fullName}\nItems: ${itemsSummary}\nTotal: ${totalPrice}\nAddress: ${formData.shippingAddress}, ${formData.city}`,
+  //   );
+  //   const nextWhatsappUrl = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE_NUMBER}&text=${whatsappMessage} `;
+  //   setWhatsappUrl(nextWhatsappUrl);
+
+  //   if (whatsappWindow && !whatsappWindow.closed) {
+  //     whatsappWindow.location.replace(nextWhatsappUrl);
+  //   }
+
+  //   setTrackingPhoneNumber(normalizedPhoneNumber);
+  //   setTrackingRefreshKey((currentValue) => currentValue + 1);
+  //   setHasPlacedOrder(true);
+  //   onClearCart();
+  //   setOrderFeedback(
+  //     whatsappWindow && !whatsappWindow.closed
+  //       ? `Thank you. Your order has been placed successfully, Order ID: ${createdOrderId || "Unavailable"}.`
+  //       : `Your order has been placed successfully. Use the WhatsApp button below if it did not open automatically. Order ID: ${createdOrderId || "Unavailable"}.`,
+  //   );
+
+  //   return true;
+  // };
   const handlePlaceOrder = async (formData) => {
-    if (cartItems.length === 0) {
-      return false;
-    }
+    if (cartItems.length === 0) return false;
 
     const normalizedPhoneNumber = normalizePhoneNumber(formData.phoneNumber);
-    const whatsappWindow = prepareWhatsappWindow();
 
     setIsProcessing(true);
     setOrderFeedback("");
@@ -97,10 +162,6 @@ function CheckoutPage({
     setIsProcessing(false);
 
     if (error) {
-      if (whatsappWindow && !whatsappWindow.closed) {
-        whatsappWindow.close();
-      }
-
       setHasPlacedOrder(false);
       setOrderFeedback(getOrderErrorMessage(error));
       return false;
@@ -109,34 +170,33 @@ function CheckoutPage({
     const createdOrder = data?.[0] || null;
     const createdOrderId = createdOrder?.id || null;
 
+    // 1. Prepare the Message
     const itemsSummary = cartItems
       .map((item) => `${item.name} x${item.quantity}`)
       .join(", ");
 
     const whatsappMessage = encodeURIComponent(
-      `\u{1F6CD}\uFE0F New Order Received!\nName: ${formData.fullName}\nItems: ${itemsSummary}\nTotal: ${totalPrice}\nAddress: ${formData.shippingAddress}, ${formData.city}`,
+      `🛍️ New Order Received!\nOrder ID: ${createdOrderId}\nName: ${formData.fullName}\nItems: ${itemsSummary}\nTotal: ${totalPrice}\nAddress: ${formData.shippingAddress}, ${formData.city}`,
     );
-    const nextWhatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${whatsappMessage}
-    `;
+
+    // 2. Build the URL (No extra spaces at the end)
+    const nextWhatsappUrl = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE_NUMBER}&text=${whatsappMessage}`;
     setWhatsappUrl(nextWhatsappUrl);
 
-    if (whatsappWindow && !whatsappWindow.closed) {
-      whatsappWindow.location.replace(nextWhatsappUrl);
-    }
+    // 3. THE DIRECT JUMP (This replaces the popup logic)
+    window.location.href = nextWhatsappUrl;
 
+    // 4. Update UI
     setTrackingPhoneNumber(normalizedPhoneNumber);
     setTrackingRefreshKey((currentValue) => currentValue + 1);
     setHasPlacedOrder(true);
     onClearCart();
     setOrderFeedback(
-      whatsappWindow && !whatsappWindow.closed
-        ? `Thank you. Your order has been placed successfully, Order ID: ${createdOrderId || "Unavailable"}.`
-        : `Your order has been placed successfully. Use the WhatsApp button below if it did not open automatically. Order ID: ${createdOrderId || "Unavailable"}.`,
+      `Thank you! Your order has been placed. Order ID: ${createdOrderId.tofixed(3)}.`,
     );
 
     return true;
   };
-
   return (
     <main className="px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
       <div className="mx-auto max-w-7xl">
