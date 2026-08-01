@@ -1,12 +1,12 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 const initialFormState = {
-  fullName: '',
-  phoneNumber: '',
-  shippingAddress: '',
-  city: '',
-  paymentMethod: 'Cash on Delivery',
-}
+  fullName: "",
+  phoneNumber: "",
+  shippingAddress: "",
+  city: "",
+  paymentMethod: "Cash on Delivery",
+};
 
 function CheckoutForm({
   disabled,
@@ -15,39 +15,39 @@ function CheckoutForm({
   orderFeedback,
   whatsappUrl,
 }) {
-  const [formData, setFormData] = useState(initialFormState)
-  const [phoneError, setPhoneError] = useState('')
+  const [formData, setFormData] = useState(initialFormState);
+  const [phoneError, setPhoneError] = useState("");
 
   const handleChange = (event) => {
-    const { name, value } = event.target
-    setFormData((currentForm) => ({ ...currentForm, [name]: value }))
+    const { name, value } = event.target;
+    setFormData((currentForm) => ({ ...currentForm, [name]: value }));
 
-    if (name === 'phoneNumber') {
-      setPhoneError('')
+    if (name === "phoneNumber") {
+      setPhoneError("");
     }
-  }
+  };
 
   const handleSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     if (disabled) {
-      return
+      return;
     }
 
-    const phonePattern = /^\d{11}$/
+    const phonePattern = /^\d{11}$/;
 
     if (!phonePattern.test(formData.phoneNumber)) {
-      setPhoneError('Phone number must be 11 digits.')
-      return
+      setPhoneError("Phone number must be 11 digits.");
+      return;
     }
 
-    setPhoneError('')
-    const isSuccessful = await onPlaceOrder(formData)
+    setPhoneError("");
+    const isSuccessful = await onPlaceOrder(formData);
 
     if (isSuccessful) {
-      setFormData(initialFormState)
+      setFormData(initialFormState);
     }
-  }
+  };
 
   return (
     <div className="rounded-[32px] border border-white/70 bg-white p-6 shadow-[0_24px_60px_rgba(88,66,44,0.07)] sm:p-8">
@@ -88,7 +88,7 @@ function CheckoutForm({
             inputMode="tel"
             placeholder="03001234567"
             className={`h-12 w-full rounded-2xl border bg-[var(--color-cream)] px-4 text-sm outline-none transition focus:border-[var(--color-accent)] ${
-              phoneError ? 'border-red-400' : 'border-[var(--color-line)]'
+              phoneError ? "border-red-400" : "border-[var(--color-line)]"
             }`}
             required
           />
@@ -146,9 +146,9 @@ function CheckoutForm({
         <button
           type="submit"
           disabled={disabled || isProcessing}
-          className="mt-4 h-12 w-full rounded-full bg-[var(--color-accent)] text-sm font-semibold tracking-[0.12em] text-white transition hover:bg-[var(--color-accent-strong)] disabled:cursor-not-allowed disabled:bg-[#d9c0b2]"
+          className="cursor-pointer mt-4 h-12 w-full rounded-full bg-[var(--color-accent)] text-sm font-semibold tracking-[0.12em] text-white transition hover:bg-[var(--color-accent-strong)] disabled:cursor-not-allowed disabled:bg-[#d9c0b2]"
         >
-          {isProcessing ? 'Processing...' : 'Place Order'}
+          {isProcessing ? "Processing..." : "Place Order"}
         </button>
       </form>
 
@@ -168,7 +168,7 @@ function CheckoutForm({
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default CheckoutForm
+export default CheckoutForm;

@@ -1,4 +1,4 @@
-import { Menu, ShoppingBag } from 'lucide-react'
+import { Menu, ShoppingBag } from "lucide-react";
 
 function Navbar({ cartCount, currentPage, onMenuToggle, onCartClick }) {
   return (
@@ -7,7 +7,7 @@ function Navbar({ cartCount, currentPage, onMenuToggle, onCartClick }) {
         <button
           type="button"
           onClick={onMenuToggle}
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-line)] bg-white/70 text-[var(--color-ink)] transition hover:border-[var(--color-accent)] hover:bg-white"
+          className="cursor-pointer flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-line)] bg-white/70 text-[var(--color-ink)] transition hover:border-[var(--color-accent)] hover:bg-white"
           aria-label="Open navigation menu"
         >
           <Menu className="h-5 w-5" />
@@ -15,8 +15,8 @@ function Navbar({ cartCount, currentPage, onMenuToggle, onCartClick }) {
 
         <button
           type="button"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="font-brand text-2xl tracking-[0.08em] text-[var(--color-ink)] sm:text-3xl"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className=" font-brand text-2xl tracking-[0.08em] text-[var(--color-ink)] sm:text-3xl"
           aria-label="Lunelle home"
         >
           Lunelle
@@ -25,10 +25,10 @@ function Navbar({ cartCount, currentPage, onMenuToggle, onCartClick }) {
         <button
           type="button"
           onClick={onCartClick}
-          className={`relative flex h-11 w-11 items-center justify-center rounded-full border transition ${
-            currentPage === 'checkout'
-              ? 'border-[var(--color-accent)] bg-[var(--color-blush)]'
-              : 'border-[var(--color-line)] bg-white/70 hover:border-[var(--color-accent)] hover:bg-white'
+          className={`cursor-pointer relative flex h-11 w-11 items-center justify-center rounded-full border transition ${
+            currentPage === "checkout"
+              ? "border-[var(--color-accent)] bg-[var(--color-blush)]"
+              : "border-[var(--color-line)] bg-white/70 hover:border-[var(--color-accent)] hover:bg-white"
           }`}
           aria-label="Open checkout"
         >
@@ -39,7 +39,7 @@ function Navbar({ cartCount, currentPage, onMenuToggle, onCartClick }) {
         </button>
       </div>
     </header>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;

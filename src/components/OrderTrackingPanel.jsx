@@ -1,95 +1,98 @@
-import { useEffect, useState } from 'react'
-import { supabase } from '../supabaseClient'
-
+import { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
 function formatCurrency(amount) {
-  return new Intl.NumberFormat('en-PK', {
-    style: 'currency',
-    currency: 'PKR',
-    maximumFractionDigits: 0,
-  }).format(amount || 0)
+  return "Rs. " + Number(amount || 0).toLocaleString("en-PK");
 }
+const delivery = 250;
 
 function formatDate(value) {
   if (!value) {
-    return 'Recently placed'
+    return "Recently placed";
   }
 
-  return new Intl.DateTimeFormat('en-PK', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(value))
+  return new Intl.DateTimeFormat("en-PK", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
 }
 
 function normalizeStatus(status) {
+  // 1. Fallback if status is null, undefined, or empty string
   if (!status) {
-    return 'Pending'
+    return "Pending";
   }
 
-  return String(status)
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (character) => character.toUpperCase())
+  // 2. Trim whitespace and make it "Title Case"
+  // (Turns "shipped " or "SHIPPED" into "Shipped")
+  const cleanStatus = status.trim().toLowerCase();
+
+  return cleanStatus.charAt(0).toUpperCase() + cleanStatus.slice(1);
 }
 
-function OrderTrackingPanel({ initialPhoneNumber = '', refreshKey = 0 }) {
-  const [searchPhone, setSearchPhone] = useState(initialPhoneNumber)
-  const [orders, setOrders] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+function OrderTrackingPanel({ initialPhoneNumber = "", refreshKey = 0 }) {
+  const [searchPhone, setSearchPhone] = useState(initialPhoneNumber);
+  const [orders, setOrders] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const fetchOrders = async (phoneNumber) => {
     if (!phoneNumber) {
-      setOrders([])
-      setErrorMessage('')
-      return
+      setOrders([]);
+      setErrorMessage("");
+      return;
     }
 
-    setIsLoading(true)
-    setErrorMessage('')
-
+    setIsLoading(true);
+    setErrorMessage("");
     const { data, error } = await supabase
-      .from('orders')
-      .select('*')
-      .eq('phone_number', phoneNumber)
+      .from("orders")
+      .select("*")
+      .eq("phone_number", phoneNumber)
+      .order("id", { ascending: false }) // Sort by ID (highest/newest first)
+      .limit(1);
 
-    setIsLoading(false)
+    setIsLoading(false);
 
     if (error) {
-      setOrders([])
-      setErrorMessage(error.message || 'Unable to load orders right now.')
-      return
+      setOrders([]);
+      setErrorMessage(error.message || "Unable to load orders right now.");
+      return;
     }
 
     const sortedOrders = [...(data || [])].sort((firstOrder, secondOrder) => {
       const firstValue =
-        firstOrder.created_at || firstOrder.id || firstOrder.customer_name || ''
+        firstOrder.created_at ||
+        firstOrder.id ||
+        firstOrder.customer_name ||
+        "";
       const secondValue =
         secondOrder.created_at ||
         secondOrder.id ||
         secondOrder.customer_name ||
-        ''
+        "";
 
-      return String(secondValue).localeCompare(String(firstValue))
-    })
+      return String(secondValue).localeCompare(String(firstValue));
+    });
 
-    setOrders(sortedOrders)
+    setOrders(sortedOrders);
 
     if (sortedOrders.length === 0) {
-      setErrorMessage('No orders found for this phone number yet.')
+      setErrorMessage("No orders found for this phone number yet.");
     }
-  }
+  };
 
   const handleSubmit = async (event) => {
-    event.preventDefault()
-    await fetchOrders(searchPhone)
-  }
+    event.preventDefault();
+    await fetchOrders(searchPhone);
+  };
 
   useEffect(() => {
-    setSearchPhone(initialPhoneNumber)
+    setSearchPhone(initialPhoneNumber);
 
     if (initialPhoneNumber) {
-      fetchOrders(initialPhoneNumber)
+      fetchOrders(initialPhoneNumber);
     }
-  }, [initialPhoneNumber, refreshKey])
+  }, [initialPhoneNumber, refreshKey]);
 
   return (
     <section className="rounded-[32px] border border-white/70 bg-white p-6 shadow-[0_24px_60px_rgba(88,66,44,0.07)] sm:p-8">
@@ -120,7 +123,7 @@ function OrderTrackingPanel({ initialPhoneNumber = '', refreshKey = 0 }) {
           disabled={isLoading}
           className="h-12 rounded-full bg-[var(--color-accent)] px-6 text-sm font-semibold tracking-[0.12em] text-white transition hover:bg-[var(--color-accent-strong)] disabled:cursor-not-allowed disabled:bg-[#d9c0b2]"
         >
-          {isLoading ? 'Checking...' : 'Track Order'}
+          {isLoading ? "Checking..." : "Track Order"}
         </button>
       </form>
 
@@ -140,7 +143,7 @@ function OrderTrackingPanel({ initialPhoneNumber = '', refreshKey = 0 }) {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p className="text-lg font-semibold text-[var(--color-ink)]">
-                    {order.customer_name || 'Customer'}
+                    {order.customer_name || "Customer"}
                   </p>
                   <p className="mt-1 text-sm text-[var(--color-muted)]">
                     {formatDate(order.created_at)}
@@ -155,20 +158,20 @@ function OrderTrackingPanel({ initialPhoneNumber = '', refreshKey = 0 }) {
                 <p>
                   <span className="font-medium text-[var(--color-ink)]">
                     Total:
-                  </span>{' '}
-                  {formatCurrency(order.total_price)}
+                  </span>{" "}
+                  {formatCurrency(order.total_price + delivery)}
                 </p>
                 <p>
                   <span className="font-medium text-[var(--color-ink)]">
                     Payment:
-                  </span>{' '}
-                  {order.payment_method || 'Not provided'}
+                  </span>{" "}
+                  {order.payment_method || "Not provided"}
                 </p>
                 <p className="sm:col-span-2">
                   <span className="font-medium text-[var(--color-ink)]">
                     Address:
-                  </span>{' '}
-                  {[order.address, order.city].filter(Boolean).join(', ')}
+                  </span>{" "}
+                  {[order.address, order.city].filter(Boolean).join(", ")}
                 </p>
               </div>
 
@@ -179,10 +182,10 @@ function OrderTrackingPanel({ initialPhoneNumber = '', refreshKey = 0 }) {
                 <ul className="mt-2 space-y-2 text-sm text-[var(--color-muted)]">
                   {(order.items || []).map((item, itemIndex) => (
                     <li
-                      key={`${item.name || 'item'}-${itemIndex}`}
+                      key={`${item.name || "item"}-${itemIndex}`}
                       className="rounded-2xl bg-white/80 px-4 py-3"
                     >
-                      {(item.name || 'Item') + ` x${item.quantity || 1}`}
+                      {(item.name || "Item") + ` x${item.quantity || 1}`}
                     </li>
                   ))}
                 </ul>
@@ -192,7 +195,7 @@ function OrderTrackingPanel({ initialPhoneNumber = '', refreshKey = 0 }) {
         </div>
       )}
     </section>
-  )
+  );
 }
 
-export default OrderTrackingPanel
+export default OrderTrackingPanel;

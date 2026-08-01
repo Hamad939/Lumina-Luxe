@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Added useEffect
 import { ArrowLeft } from "lucide-react";
 import CheckoutForm from "../components/CheckoutForm";
 import OrderTrackingPanel from "../components/OrderTrackingPanel";
@@ -12,40 +12,26 @@ function normalizePhoneNumber(value) {
 }
 
 function getOrderErrorMessage(error) {
-  if (!error) {
-    return "Unable to place order right now.";
-  }
-
+  if (!error) return "Unable to place order right now.";
   const parts = [error.message, error.details, error.hint].filter(Boolean);
-
-  if (parts.length > 0) {
-    return parts.join(" ");
-  }
-
-  return "Unable to place order right now.";
+  return parts.length > 0
+    ? parts.join(" ")
+    : "Unable to place order right now.";
 }
 
 function prepareWhatsappWindow() {
   const popup = window.open("", "_blank");
-
-  if (!popup) {
-    return null;
-  }
-
+  if (!popup) return null;
   popup.document.write(`
     <!doctype html>
     <html>
-      <head>
-        <title>Opening WhatsApp</title>
-        <meta charset="utf-8" />
-      </head>
+      <head><title>Opening WhatsApp</title><meta charset="utf-8" /></head>
       <body style="font-family: Arial, sans-serif; padding: 24px; color: #2f241f;">
         <p style="margin: 0; font-size: 16px;">Opening WhatsApp...</p>
       </body>
     </html>
   `);
   popup.document.close();
-
   return popup;
 }
 
@@ -66,6 +52,15 @@ function CheckoutPage({
     (total, item) => total + item.price * item.quantity,
     0,
   );
+
+  // --- NEW: Load from local storage on refresh ---
+  useEffect(() => {
+    const savedPhone = localStorage.getItem("lastOrderPhone");
+    if (savedPhone) {
+      setTrackingPhoneNumber(savedPhone);
+      setHasPlacedOrder(true);
+    }
+  }, []);
 
   const handlePlaceOrder = async (formData) => {
     if (cartItems.length === 0) return false;
@@ -111,11 +106,14 @@ function CheckoutPage({
       `🛍️ New Order Received!\nOrder ID: ${createdOrderId}\nName: ${formData.fullName}\nItems: ${itemsSummary}\nTotal: ${totalPrice}\nAddress: ${formData.shippingAddress}, ${formData.city}`,
     );
 
-    // 2. Build the URL (No extra spaces at the end)
+    // 2. Build the URL
     const nextWhatsappUrl = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE_NUMBER}&text=${whatsappMessage}`;
     setWhatsappUrl(nextWhatsappUrl);
 
-    // 3. THE DIRECT JUMP (This replaces the popup logic)
+    // --- NEW: Save phone to local storage ---
+    localStorage.setItem("lastOrderPhone", normalizedPhoneNumber);
+
+    // 3. THE DIRECT JUMP
     window.location.href = nextWhatsappUrl;
 
     // 4. Update UI
@@ -124,18 +122,19 @@ function CheckoutPage({
     setHasPlacedOrder(true);
     onClearCart();
     setOrderFeedback(
-      `Thank you! Your order has been placed. Order ID: ${createdOrderId.tofixed(3)}.`,
+      `Thank you! Your order has been placed. Order ID: ${createdOrderId}.`,
     );
 
     return true;
   };
+
   return (
     <main className="px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
       <div className="mx-auto max-w-7xl">
         <button
           type="button"
           onClick={onBackHome}
-          className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--color-line)] bg-white px-4 py-2 text-sm font-medium text-[var(--color-ink)] transition hover:border-[var(--color-accent)]"
+          className="cursor-pointer  mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--color-line)] bg-white px-4 py-2 text-sm font-medium text-[var(--color-ink)] transition hover:border-[var(--color-accent)]"
         >
           <ArrowLeft className="h-4 w-4" />
           Continue Shopping

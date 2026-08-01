@@ -1,5 +1,5 @@
 const heroImage =
-  'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1600&q=80'
+  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1600&q=80";
 
 function Hero({ onShopNow }) {
   return (
@@ -8,8 +8,8 @@ function Hero({ onShopNow }) {
         className="relative min-h-[58vh] overflow-hidden rounded-[32px] border border-white/60 sm:min-h-[66vh] lg:min-h-[76vh]"
         style={{
           backgroundImage: `linear-gradient(90deg, rgba(40, 27, 20, 0.68) 0%, rgba(40, 27, 20, 0.38) 36%, rgba(40, 27, 20, 0.12) 100%), url(${heroImage})`,
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
+          backgroundPosition: "center",
+          backgroundSize: "cover",
         }}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.28),transparent_30%)]" />
@@ -28,7 +28,7 @@ function Hero({ onShopNow }) {
             <button
               type="button"
               onClick={onShopNow}
-              className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-[var(--color-accent)] px-7 text-sm font-semibold tracking-[0.12em] text-white transition hover:bg-[var(--color-accent-strong)]"
+              className="cursor-pointer mt-8 inline-flex h-12 items-center justify-center rounded-full bg-[var(--color-accent)] px-7 text-sm font-semibold tracking-[0.12em] text-white transition hover:bg-[var(--color-accent-strong)]"
             >
               Shop Now
             </button>
@@ -36,7 +36,7 @@ function Hero({ onShopNow }) {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
-export default Hero
+export default Hero;

@@ -53,7 +53,7 @@ function OrderSummary({ cartItems, onUpdateQuantity }) {
                   <button
                     type="button"
                     onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-line)]"
+                    className="cursor-pointer flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-line)]"
                     aria-label={`Decrease quantity of ${item.name}`}
                   >
                     <Minus className="h-4 w-4" />
@@ -64,7 +64,7 @@ function OrderSummary({ cartItems, onUpdateQuantity }) {
                   <button
                     type="button"
                     onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-line)]"
+                    className="cursor-pointer flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-line)]"
                     aria-label={`Increase quantity of ${item.name}`}
                   >
                     <Plus className="h-4 w-4" />
